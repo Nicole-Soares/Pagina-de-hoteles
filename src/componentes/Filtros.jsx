@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Alert from "@material-ui/lab/Alert";
+
 
 export default function Filtros(props) {
   const [paisActual, actualizarPais] = useState("todos");
@@ -8,8 +8,8 @@ export default function Filtros(props) {
   const [tiempoActual, actualizarTiempo] = useState("");
   const [tiempoActualDos, actualizarTiempoDos] = useState("");
 
-  const hotelDisponibleEnFecha = (fechaHotelDesde, fechaHotelHasta, fecha) => {
-    return fecha >= fechaHotelDesde && fecha <= fechaHotelHasta;
+  const hotelDisponibleEnFecha = (fechaHotelDesde, fechaHotelHasta, fechaDesde, fechaHasta) => {
+    return fechaDesde >= fechaHotelDesde && fechaHasta <= fechaHotelHasta;
   };
 
   const tamañoDeHotel = (habitaciones) => {
@@ -84,17 +84,19 @@ export default function Filtros(props) {
         (hotel) => tamañoDeHotel(hotel.rooms) === tamaño
       );
     }
-    if (fechaDesde !== "") {
-      let fechaFormateada = new Date(fechaDesde).valueOf();
+    if (fechaDesde !== "" && fechaHasta !== "") {
+      let fechaFormateadaDesde = new Date(fechaDesde).valueOf();
+      let fechaFormateadaHasta = new Date(fechaHasta).valueOf();
       nuevaLista = nuevaLista.filter((hotel) =>
         hotelDisponibleEnFecha(
           hotel.availabilityFrom,
           hotel.availabilityTo,
-          fechaFormateada
+          fechaFormateadaDesde,
+          fechaFormateadaHasta,
         )
       );
     }
-    if (fechaHasta !== "") {
+    /*if (fechaHasta !== "") {
       let fechaFormateada = new Date(fechaHasta).valueOf();
       nuevaLista = nuevaLista.filter((hotel) =>
         hotelDisponibleEnFecha(
@@ -103,7 +105,7 @@ export default function Filtros(props) {
           fechaFormateada
         )
       );
-    }
+    }*/
     return nuevaLista;
   };
 
@@ -154,6 +156,15 @@ export default function Filtros(props) {
     props.setListaDeHoteles(listaFiltrada);
   };
 
+  const fechaInicial=()=>{
+    actualizarTiempoDos("");
+   
+   let listaFiltrada = crearLista({
+    fechaHasta:"",
+   });
+   props.setListaDeHoteles(listaFiltrada);
+  }
+
   return (
     <div className="header">
       <div className="titulo">
@@ -161,13 +172,10 @@ export default function Filtros(props) {
         {tiempoActual !== "" && tiempoActualDos !== "" ? (
           fechasValidas() ? (
             <h4>
-              Desde {dateFormat1(tiempoActual)} hasta el{" "}
-              {dateFormat1(tiempoActualDos)}{" "}
+              Desde {dateFormat1(tiempoActual)} hasta el {dateFormat1(tiempoActualDos)}
             </h4>
           ) : (
-            <Alert severity="error">
-              Las fechas seleccionadas son inválidas
-            </Alert>
+            fechaInicial(), window.alert("La fecha puesta no es valida")
           )
         ) : (
           <></>
@@ -210,10 +218,10 @@ export default function Filtros(props) {
           onChange={onChangePrecio}
         >
           <option value="cualquiera">cualquier precio</option>
-          <option value="1">$</option>
-          <option value="2">$$</option>
-          <option value="3">$$$</option>
-          <option value="4">$$$$</option>
+          <option value="1">Hotel Barato</option>
+          <option value="2">Hotel Medio</option>
+          <option value="3">Hotel Caro</option>
+          <option value="4">Hotel Lujoso</option>
         </select>
         <select
           name="tamaños-habitaciones"
