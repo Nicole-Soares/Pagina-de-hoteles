@@ -165,6 +165,28 @@ export default function Filtros(props) {
    props.setListaDeHoteles(listaFiltrada);
   }
 
+  let precioFormateado= (precioActual) => {
+  
+    if(precioActual === "4"){
+   return ("lujoso")
+    }
+    else if (precioActual === "3"){
+      return ("caro")
+    }
+    else if(precioActual === "2"){
+      return("medio")
+    }
+    else if(precioActual === "1"){
+      return("barato")
+    }
+    else{
+      return("cualquiera")
+    }
+      
+  }
+
+
+
   return (
     <div className="header">
       <div className="titulo">
@@ -172,7 +194,7 @@ export default function Filtros(props) {
         {tiempoActual !== "" && tiempoActualDos !== "" ? (
           fechasValidas() ? (
             <h4>
-              Desde {dateFormat1(tiempoActual)} hasta el {dateFormat1(tiempoActualDos)}
+             Busqueda de hotel {tamañoActual} de precio {precioFormateado(precioActual)} desde {dateFormat1(tiempoActual)} hasta el {dateFormat1(tiempoActualDos)} en {paisActual}
             </h4>
           ) : (
             fechaInicial(), window.alert("La fecha puesta no es valida")
