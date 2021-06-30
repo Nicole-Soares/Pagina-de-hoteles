@@ -1,12 +1,18 @@
 import React, { useState } from "react";
+import 'date-fns';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
 
 
 export default function Filtros(props) {
   const [paisActual, actualizarPais] = useState("todos");
   const [precioActual, actualizarPrecio] = useState("cualquiera");
   const [tamañoActual, actualizarTamaño] = useState("cualquiera");
-  const [tiempoActual, actualizarTiempo] = useState("");
-  const [tiempoActualDos, actualizarTiempoDos] = useState("");
+  const [tiempoActual, actualizarTiempo] = useState(null);
+  const [tiempoActualDos, actualizarTiempoDos] = useState(null);
 
   const hotelDisponibleEnFecha = (fechaHotelDesde, fechaHotelHasta, fechaDesde, fechaHasta) => {
     return fechaDesde >= fechaHotelDesde && fechaHasta <= fechaHotelHasta;
@@ -53,10 +59,10 @@ export default function Filtros(props) {
     "Noviembre",
     "Diciembre"
   ];
-  function dateFormat1(fecha) {
-    let t = new Date(fecha);
+  function dateFormat1(date) {
+    let t = (date);
     let diaDeLaSemana = dias[t.getDay()];
-    let diaDelMes = t.getDate() + 1;
+    let diaDelMes = t.getDate() ;
     let mes = meses[t.getMonth()];
     let anio = t.getFullYear();
     return `${diaDeLaSemana} ${diaDelMes} de ${mes} del ${anio}`;
@@ -84,9 +90,9 @@ export default function Filtros(props) {
         (hotel) => tamañoDeHotel(hotel.rooms) === tamaño
       );
     }
-    if (fechaDesde !== "" && fechaHasta !== "") {
-      let fechaFormateadaDesde = new Date(fechaDesde).valueOf();
-      let fechaFormateadaHasta = new Date(fechaHasta).valueOf();
+    if (fechaDesde !== null && fechaHasta !== null) {
+      let fechaFormateadaDesde = (fechaDesde).valueOf();
+      let fechaFormateadaHasta = (fechaHasta).valueOf();
       nuevaLista = nuevaLista.filter((hotel) =>
         hotelDisponibleEnFecha(
           hotel.availabilityFrom,
@@ -127,15 +133,15 @@ export default function Filtros(props) {
     props.setListaDeHoteles(listaFiltrada);
   };
 
-  const onChangeDesde = (evento) => {
-    actualizarTiempo(evento.target.value);
-    let listaFiltrada = crearLista({ fechaDesde: evento.target.value });
+  const onChangeDesde = (date) => {
+    actualizarTiempo(date);
+    let listaFiltrada = crearLista({ fechaDesde: date});
     props.setListaDeHoteles(listaFiltrada);
   };
 
-  const onChangeHasta = (evento) => {
-    actualizarTiempoDos(evento.target.value);
-    let listaFiltrada = crearLista({ fechaHasta: evento.target.value });
+  const onChangeHasta = (date) => {
+    actualizarTiempoDos(date);
+    let listaFiltrada = crearLista({ fechaHasta: date });
     props.setListaDeHoteles(listaFiltrada);
   };
 
@@ -143,24 +149,24 @@ export default function Filtros(props) {
     actualizarPais("todos");
     actualizarPrecio("cualquiera");
     actualizarTamaño("cualquiera");
-    actualizarTiempo("");
-    actualizarTiempoDos("");
+    actualizarTiempo(null);
+    actualizarTiempoDos(null);
 
     let listaFiltrada = crearLista({
       precio: "cualquiera",
       pais: "todos",
       tamaño: "cualquiera",
-      fechaDesde: "",
-      fechaHasta: "",
+      fechaDesde: null,
+      fechaHasta: null,
     });
     props.setListaDeHoteles(listaFiltrada);
   };
 
   const fechaInicial=()=>{
-    actualizarTiempoDos("");
+    actualizarTiempoDos(null);
    
    let listaFiltrada = crearLista({
-    fechaHasta:"",
+    fechaHasta:null,
    });
    props.setListaDeHoteles(listaFiltrada);
   }
@@ -191,7 +197,7 @@ export default function Filtros(props) {
     <div className="header">
       <div className="titulo">
         <h1> Hoteles</h1>
-        {tiempoActual !== "" && tiempoActualDos !== "" ? (
+        {tiempoActual !== null && tiempoActualDos !== null ? (
           fechasValidas() ? (
             <h4>
              Busqueda de hotel {tamañoActual} de precio {precioFormateado(precioActual)} desde {dateFormat1(tiempoActual)} hasta el {dateFormat1(tiempoActualDos)} en {paisActual}
@@ -204,22 +210,40 @@ export default function Filtros(props) {
         )}
       </div>
       <div className="contenedor-filtros">
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <label htmlFor="hasta">Desde:</label>
-        <input
-          type="date"
+        <KeyboardDatePicker
+          disableToolbar
+          variant="inline"
+          format="dd/MM/yyyy"
+          margin="normal"
+          id="date-picker-inline"
+         
           value={tiempoActual}
-          id="desde"
           onChange={onChangeDesde}
+          KeyboardButtonProps={{
+            'aria-label': 'change date',
+          }}
         />
+      
+      
 
         <label htmlFor="hasta">Hasta:</label>
-        <input
-          type="date"
+        <KeyboardDatePicker
+          disableToolbar
+          variant="inline"
+          format="dd/MM/yyyy"
+          margin="normal"
+          id="date-picker-inline"
+         
           value={tiempoActualDos}
-          id="hasta"
           onChange={onChangeHasta}
+          KeyboardButtonProps={{
+            'aria-label': 'change date',
+          }}
         />
 
+</MuiPickersUtilsProvider>
         <select
           name="seleccionar-paises"
           id="seleccionar-paises"
