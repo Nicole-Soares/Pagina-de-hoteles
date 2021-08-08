@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./styles.css";
-import { hotelesData } from "../recursos/listadehoteles.js";
+import { hotelesData } from "./recursos/listadehoteles.js";
 import GrillaDeHoteles from "./componentes/GrillaDeHoteles";
 import Filtros from "./componentes/Filtros";
 
